@@ -22,7 +22,7 @@ function cursorToOffset(cursor) {
  */
 function getOffsetWithDefault(cursor, defaultOffset) {
   var offset;
-  if (cursor === undefined) {
+  if (cursor == null) {
     return defaultOffset;
   }
   offset = cursorToOffset(cursor);

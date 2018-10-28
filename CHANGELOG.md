@@ -1,3 +1,13 @@
+<a name="2.1.1"></a>
+## 2.1.1 (2018-10-28)
+
+Fix error:
+```
+First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.
+```
+It happens if any connection argument comes as `null`. This is what Relay's **refetchConnection** from **PaginationContainer** does in order to refetch connection from scratch.
+
+
 <a name="2.1.0"></a>
 ## 2.1.0 (2016-07-31)
 

@@ -6,8 +6,10 @@ const COL = 'letters';
 let db;
 let findAll;
 
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
+
 test.before(async t => {
-  db = await MongoClient.connect(process.env.MONGO_URL);
+  db = await MongoClient.connect(MONGO_URL);
 
   await db.collection(COL).insertMany(
     ['A', 'B', 'C', 'D', 'E'].map(l => ({ letter: l, _id: `letter_${l}` }))

@@ -12,9 +12,11 @@ const MODEL = mongoose.model('letter', SCHEMA);
 let db;
 let findAll;
 
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
+
 test.before(async () => {
   mongoose.Promise = global.Promise;
-  await mongoose.connect(process.env.MONGO_URL);
+  await mongoose.connect(MONGO_URL);
   db = mongoose.connection;
 
   await MODEL.insertMany(
