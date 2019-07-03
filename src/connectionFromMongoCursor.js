@@ -13,23 +13,27 @@ function connectionFromMongoCursor(inMongoCursor, inArgs, mapper) {
   var args = inArgs || {};
   var mongodbCursor = inMongoCursor.clone();
 
-  return mongodbCursor.count()
-    .then(function countPromise(count) {
-      var pagination = getOffsetsFromArgs(args, count);
+  // Because getting count from cursor in sharded DB is very slow
+  var collectionName = mongodbCursor.cmd.find.replace(/^[^.]+\./, '');
+  var query = mongodbCursor.cmd.query;
+  var countPromise = mongodbCursor.options.db.collection(collectionName).find(query).count();
 
-      // Short circuit if limit is 0; in that case, mongodb doesn't limit at all
-      if (pagination.limit === 0) {
-        return getConnectionFromSlice([], mapper, args, count);
-      }
+  return countPromise.then(function fulfilled(count) {
+    var pagination = getOffsetsFromArgs(args, count);
 
-      // If the supplied slice is too large, trim it down before mapping over it
-      mongodbCursor.skip(pagination.skip);
-      mongodbCursor.limit(pagination.limit);
+    // Short circuit if limit is 0; in that case, mongodb doesn't limit at all
+    if (pagination.limit === 0) {
+      return getConnectionFromSlice([], mapper, args, count);
+    }
 
-      return mongodbCursor.toArray().then(function fromSlice(slice) {
-        return getConnectionFromSlice(slice, mapper, args, count);
-      });
+    // If the supplied slice is too large, trim it down before mapping over it
+    mongodbCursor.skip(pagination.skip);
+    mongodbCursor.limit(pagination.limit);
+
+    return mongodbCursor.toArray().then(function fromSlice(slice) {
+      return getConnectionFromSlice(slice, mapper, args, count);
     });
+  });
 }
 
 module.exports = connectionFromMongoCursor;
