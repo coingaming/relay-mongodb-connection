@@ -16,7 +16,7 @@ function connectionFromMongoCursor(inMongoCursor, inArgs, mapper) {
   // Because getting count from cursor in sharded DB is very slow
   var collectionName = mongodbCursor.cmd.find.replace(/^[^.]+\./, '');
   var query = mongodbCursor.cmd.query;
-  var countPromise = mongodbCursor.options.db.collection(collectionName).find(query).count();
+  var countPromise = mongodbCursor.options.db.collection(collectionName).count(query);
 
   return countPromise.then(function fulfilled(count) {
     var pagination = getOffsetsFromArgs(args, count);
