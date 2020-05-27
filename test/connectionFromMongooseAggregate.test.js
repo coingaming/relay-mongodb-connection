@@ -1,6 +1,6 @@
-import test from 'ava';
-import { connectionFromMongooseAggregate } from '../src';
-import mongoose from 'mongoose';
+const test = require('ava');
+const mongoose = require('mongoose');
+const { connectionFromMongooseAggregate } = require('../src');
 
 const SCHEMA = new mongoose.Schema({
   letter: String,
@@ -20,44 +20,44 @@ test.before(async () => {
   db = mongoose.connection;
 
   await MODEL.insertMany(
-    ['A', 'B', 'C', 'D', 'E'].map(l => ({ letter: l, _id: `letter_${l}` }))
+    ['A', 'B', 'C', 'D', 'E'].map((l) => ({ letter: l, _id: `letter_${l}` }))
   );
 });
 
-test.beforeEach(() => findAll = MODEL.aggregate([
-  { $match: {} },
-]));
+test.beforeEach(() => {
+    findAll = MODEL.aggregate([{ $match: {} }])
+});
 
 test.after.always(async () => {
   await MODEL.remove({});
   db.close();
 });
 
-async function resultEqual(t, args, expected) {
+const resultEqual = async function resultEqual(t, args, expected) {
   const c = await connectionFromMongooseAggregate(findAll, ...args);
   t.deepEqual(c, expected);
-}
+};
 
 test('returns all elements without filters', resultEqual, [], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A' },
+      node: { letter: 'A', _id: 'letter_A', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E' },
+      node: { letter: 'E', _id: 'letter_E', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],
@@ -69,14 +69,14 @@ test('returns all elements without filters', resultEqual, [], {
   },
 });
 
-test('respects a smaller first', resultEqual, [{ first:  2 }], {
+test('respects a smaller first', resultEqual, [{ first: 2 }], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A' },
+      node: { letter: 'A', _id: 'letter_A', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
   ],
@@ -91,23 +91,23 @@ test('respects a smaller first', resultEqual, [{ first:  2 }], {
 test('respects an overly large first', resultEqual, [{ first: 10 }], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A' },
+      node: { letter: 'A', _id: 'letter_A', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E' },
+      node: { letter: 'E', _id: 'letter_E', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],
@@ -122,11 +122,11 @@ test('respects an overly large first', resultEqual, [{ first: 10 }], {
 test('respects a smaller last', resultEqual, [{ last: 2 }], {
   edges: [
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E' },
+      node: { letter: 'E', _id: 'letter_E', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],
@@ -141,23 +141,23 @@ test('respects a smaller last', resultEqual, [{ last: 2 }], {
 test('respects an overly large last', resultEqual, [{ last: 10 }], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A' },
+      node: { letter: 'A', _id: 'letter_A', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E' },
+      node: { letter: 'E', _id: 'letter_E', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],
@@ -174,11 +174,11 @@ test('respects first and after', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
   ],
@@ -195,15 +195,15 @@ test('respects first and after with long first', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E' },
+      node: { letter: 'E', _id: 'letter_E', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],
@@ -220,11 +220,11 @@ test('respects last and before', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
   ],
@@ -241,15 +241,15 @@ test('respects last and before with long last', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A' },
+      node: { letter: 'A', _id: 'letter_A', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
   ],
@@ -268,11 +268,11 @@ test('respects first and after and before, too few', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
   ],
@@ -291,15 +291,15 @@ test('respects first and after and before, too many', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
   ],
@@ -318,15 +318,15 @@ test('respects first and after and before, exactly right', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
   ],
@@ -345,11 +345,11 @@ test('respects last and after and before, too few', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
   ],
@@ -368,15 +368,15 @@ test('respects last and after and before, too many', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
   ],
@@ -395,15 +395,15 @@ test('respects last and after and before, exactly right', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
   ],
@@ -433,23 +433,23 @@ test('returns all elements if cursors are invalid', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A' },
+      node: { letter: 'A', _id: 'letter_A', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E' },
+      node: { letter: 'E', _id: 'letter_E', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],
@@ -467,23 +467,23 @@ test('returns all elements if cursors are on the outside', resultEqual, [{
 }], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A' },
+      node: { letter: 'A', _id: 'letter_A', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B' },
+      node: { letter: 'B', _id: 'letter_B', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C' },
+      node: { letter: 'C', _id: 'letter_C', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D' },
+      node: { letter: 'D', _id: 'letter_D', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E' },
+      node: { letter: 'E', _id: 'letter_E', __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],
@@ -509,27 +509,27 @@ test('returns no elements if cursors cross', resultEqual, [{
 });
 
 test('uses mapper function if supplied', resultEqual, [
-  {}, doc => ({ ...doc, number: doc.letter.charCodeAt(0) })
+  {}, (doc) => ({ ...doc, number: doc.letter.charCodeAt(0) })
 ], {
   edges: [
     {
-      node: { letter: 'A', _id: 'letter_A', number: 65 },
+      node: { letter: 'A', _id: 'letter_A', number: 65, __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MA==',
     },
     {
-      node: { letter: 'B', _id: 'letter_B', number: 66 },
+      node: { letter: 'B', _id: 'letter_B', number: 66, __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246MQ==',
     },
     {
-      node: { letter: 'C', _id: 'letter_C', number: 67 },
+      node: { letter: 'C', _id: 'letter_C', number: 67, __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mg==',
     },
     {
-      node: { letter: 'D', _id: 'letter_D', number: 68 },
+      node: { letter: 'D', _id: 'letter_D', number: 68, __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246Mw==',
     },
     {
-      node: { letter: 'E', _id: 'letter_E', number: 69 },
+      node: { letter: 'E', _id: 'letter_E', number: 69, __v: 0 },
       cursor: 'bW9uZ29kYmNvbm5lY3Rpb246NA==',
     },
   ],

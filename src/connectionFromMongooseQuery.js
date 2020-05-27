@@ -1,15 +1,11 @@
-'use strict';
+const { getOffsetsFromArgs, getConnectionFromSlice } = require('./utils');
 
-var utils = require('./utils');
-var getOffsetsFromArgs = utils.getOffsetsFromArgs;
-var getConnectionFromSlice = utils.getConnectionFromSlice;
-
-function connectionFromMongooseQuery(query, inArgs, mapper) {
-  var args = inArgs || {};
+const connectionFromMongooseQuery = (query, inArgs, mapper) => {
+  const args = inArgs || {};
 
   return query.count()
-    .then(function countPromise(count) {
-      var pagination = getOffsetsFromArgs(args, count);
+    .then((count) => {
+      const pagination = getOffsetsFromArgs(args, count);
 
       if (pagination.limit === 0) {
         return getConnectionFromSlice([], mapper, args, count);
@@ -21,10 +17,10 @@ function connectionFromMongooseQuery(query, inArgs, mapper) {
       // Convert all Mongoose documents to objects
       query.lean();
 
-      return query.find().then(function fromSlice(slice) {
+      return query.find().then((slice) => {
         return getConnectionFromSlice(slice, mapper, args, count);
       });
     });
-}
+};
 
 module.exports = connectionFromMongooseQuery;

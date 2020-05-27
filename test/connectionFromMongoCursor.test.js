@@ -1,32 +1,41 @@
-import test from 'ava';
-import connectionFromMongoCursor from '../src';
-import { MongoClient } from 'mongodb';
+const test = require('ava');
+const { MongoClient } = require('mongodb');
+const connectionFromMongoCursor = require('../src');
 
+const DB_NAME = 'rmc-test';
 const COL = 'letters';
+let client;
 let db;
 let findAll;
 
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017';
 
-test.before(async t => {
-  db = await MongoClient.connect(MONGO_URL);
+test.before(async () => {
+  client = await MongoClient.connect(MONGO_URL, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true
+  });
+
+  db = await client.db(DB_NAME);
 
   await db.collection(COL).insertMany(
-    ['A', 'B', 'C', 'D', 'E'].map(l => ({ letter: l, _id: `letter_${l}` }))
+    ['A', 'B', 'C', 'D', 'E'].map((l) => ({ letter: l, _id: `letter_${l}` }))
   )
 });
 
-test.beforeEach(() => findAll = db.collection(COL).find({}));
-
-test.after.always(async t => {
-  await db.collection(COL).drop();
-  db.close();
+test.beforeEach(() => {
+    findAll = db.collection(COL).find({})
 });
 
-async function resultEqual(t, args, expected) {
+test.after.always(async () => {
+  await db.collection(COL).drop();
+  client.close();
+});
+
+const resultEqual = async function resultEqual(t, args, expected) {
   const c = await connectionFromMongoCursor(findAll, ...args);
   t.deepEqual(c, expected);
-}
+};
 
 test('returns all elements without filters', resultEqual, [], {
   edges: [
@@ -59,7 +68,7 @@ test('returns all elements without filters', resultEqual, [], {
   },
 });
 
-test('respects a smaller first', resultEqual, [{ first:  2 }], {
+test('respects a smaller first', resultEqual, [{ first: 2 }], {
   edges: [
     {
       node: { letter: 'A', _id: 'letter_A' },
@@ -499,7 +508,7 @@ test('returns no elements if cursors cross', resultEqual, [{
 });
 
 test('uses mapper function if supplied', resultEqual, [
-  {}, doc => ({ ...doc, number: doc.letter.charCodeAt(0) })
+  {}, (doc) => ({ ...doc, number: doc.letter.charCodeAt(0) })
 ], {
   edges: [
     {

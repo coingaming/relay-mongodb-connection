@@ -1,3 +1,14 @@
+<a name="2.3.0"></a>
+## 2.3.0 (2020-05-27)
+
+Updates:
+
+- Use Collection.countDocuments() instead of deprecated Collection.count()
+- Update package dev dependencies
+- Update eslint and codebase to match new configs
+- Update tests
+
+
 <a name="2.1.1"></a>
 ## 2.1.1 (2018-10-28)
 
